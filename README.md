@@ -1,70 +1,64 @@
-# Ministry of Justice Template Repository
+# Clean Runner
 
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/template-repository/badge)](https://github-community.service.justice.gov.uk/repository-standards/template-repository)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/action-clean-runner/badge)](https://github-community.service.justice.gov.uk/repository-standards/action-clean-runner)
 
-This template repository equips you with the default initial files required for a Ministry of Justice GitHub repository.
+This action frees up space on a GitHub-hosted runner
 
-## Included Files
+> [!CAUTION]
+> The steps performed in this action are destructive, please review before using!
 
-The repository comes with the following preset files:
+Standard Github-hosted runner are only guaranteed 14GB of SSD storage ([source](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories)), this action removes bundled software as discussed in [this](https://github.com/actions/runner-images/issues/2840) GitHub issue
 
-- LICENSE
-- .gitignore
-- CODEOWNERS
-- dependabot.yml
-- GitHub Actions example files
-- Ministry of Justice Compliance Badge (public repositories only)
+> [!TIP]
+> This action is useful when working with large container images
 
-## Setup Instructions
+## Inputs
 
-Once you've created your repository using this template, ensure the following steps:
+| Input                               | Default | Required | Description                                  |
+| :---------------------------------- | :-----: | :------: | :------------------------------------------- |
+| `confirm`                           | `false` |  `true`  | Confirm that you want to remove the software |
+| `remove_opt_google`                 | `true`  |  `true`  | Remove `/opt/google` (347MB)                 |
+| `remove_opt_hostedtoolcache`        | `true`  |  `true`  | Remove `/opt/hostedtoolcache` (8.5GB)        |
+| `remove_opt_microsoft`              | `true`  |  `true`  | Remove `/opt/microsoft` (743MB)              |
+| `remove_opt_pipx`                   | `true`  |  `true`  | Remove `/opt/pipx` (437MB)                   |
+| `remove_usr_lib_firefox`            | `true`  |  `true`  | Remove `/usr/lib/firefox` (257MB)            |
+| `remove_usr_lib_google_cloud_sdk`   | `true`  |  `true`  | Remove `/usr/lib/google-cloud-sdk` (916MB)   |
+| `remove_usr_lib_heroku`             | `true`  |  `true`  | Remove `/usr/lib/heroku` (280MB)             |
+| `remove_usr_lib_llvm_13`            | `true`  |  `true`  | Remove `/usr/lib/llvm-13` (448MB)            |
+| `remove_usr_lib_llvm_14`            | `true`  |  `true`  | Remove `/usr/lib/llvm-14` (486MB)            |
+| `remove_usr_lib_llvm_15`            | `true`  |  `true`  | Remove `/usr/lib/llvm-15` (514MB)            |
+| `remove_usr_lib_mono`               | `true`  |  `true`  | Remove `/usr/lib/mono` (423MB)               |
+| `remove_usr_local_julia`            | `true`  |  `true`  | Remove `/usr/local/julia*` (856MB)           |
+| `remove_usr_local_lib_android`      | `true`  |  `true`  | Remove `/usr/local/lib/android` (7.6GB)      |
+| `remove_usr_local_lib_node_modules` | `true`  |  `true`  | Remove `/usr/local/lib/node_modules` (1.1GB) |
+| `remove_usr_local_share_chromium`   | `true`  |  `true`  | Remove `/usr/local/share/chromium` (542MB)   |
+| `remove_usr_local_share_powershell` | `true`  |  `true`  | Remove `/usr/local/share/powershell` (1.2GB) |
+| `remove_usr_share_dotnet`           | `true`  |  `true`  | Remove `/usr/share/dotnet` (1.6GB)           |
+| `remove_usr_share_miniconda`        | `true`  |  `true`  | Remove `/usr/share/miniconda` (658MB)        |
+| `remove_usr_share_swift`            | `true`  |  `true`  | Remove `/usr/share/swift` (2.6GB)            |
 
-### Update README
+## Usage
 
-Edit this README.md file to document your project accurately. Take the time to create a clear, engaging, and informative README.md file. Include information like what your project does, how to install and run it, how to contribute, and any other pertinent details.
+> [!NOTE]
+> To run the cleanup operation, you will need to explicitly set `confirm: true`
 
-### Update repository description
-
-After you've created your repository, GitHub provides a brief description field that appears on the top of your repository's main page. This is a summary that gives visitors quick insight into the project. Using this field to provide a succinct overview of your repository is highly recommended.
-
-This description and your README.md will be one of the first things people see when they visit your repository. It's a good place to make a strong, concise first impression. Remember, this is often visible in search results on GitHub and search engines, so it's also an opportunity to help people discover your project.
-
-### Grant Team Permissions
-
-Assign permissions to the appropriate Ministry of Justice teams. Ensure at least one team is granted Admin permissions. Whenever possible, assign permissions to teams rather than individual users.
-
-Prefer to user GitHub Teams over individual access to repositories. Where appropriate, ensure GitHub Teams used are related to a Parent Team associated with a Business Unit to help ensure ownership can be easily identified.
-
-### Read about the GitHub repository standards
-
-Familiarise yourself with the Ministry of Justice GitHub Repository Standards. These standards ensure consistency, maintainability, and best practices across all our repositories.
-
-You can find the standards [here](https://github-community.service.justice.gov.uk/repository-standards/guidance).
-
-Please read and understand these standards thoroughly and enable them when you feel comfortable.
-
-### Modify the GitHub Standards Badge
-
-Once you've ensured that all the [GitHub Repository Standards](https://github-community.service.justice.gov.uk/repository-standards/guidance) have been applied to your repository, it's time to update the Ministry of Justice (MoJ) Compliance Badge located in the README file.
-
-The badge demonstrates that your repository is compliant with MoJ's standards.
-
-To update the badge, replace the `template-repository` in the badge URL with your repository's name. The badge URL should look like this:
-
-```markdown
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/${your-repository-name}/badge)](https://github-community.service.justice.gov.uk/repository-standards/${your-reposistory-name})
+```yaml
+- name: Clean Actions Runner
+  id: clean_actions_runner
+  uses: ministryofjustice/action-clean-runner@<commit SHA> # <version>
+  with:
+    confirm: true
 ```
 
-**Please note** the badge will not function correctly if your repository is internal or private. In this case, you may remove the badge from your README.
+To retain a specific piece of software, set its input to `false`, for example:
 
-### Update CODEOWNERS
+```yaml
+- name: Clean Actions Runner
+  id: clean_actions_runner
+  uses: ministryofjustice/action-clean-runner@<commit SHA> # <version>
+  with:
+    confirm: true
+    remove_opt_hostedtoolcache: false
+```
 
-(Optional) Modify the CODEOWNERS file to specify the teams or users authorized to approve pull requests.
-
-### Configure Dependabot
-
-Adapt the dependabot.yml file to match your project's [dependency manager](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#package-ecosystem) and to enable [automated pull requests for package updates](https://docs.github.com/en/code-security/supply-chain-security).
-
-### Dependency Review
-
-If your repository is private with no GitHub Advanced Security license, remove the `.github/workflows/dependency-review.yml` file.
+Using the default options should reclaim about 29GB
