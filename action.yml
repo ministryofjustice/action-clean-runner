@@ -126,22 +126,22 @@ runs:
         df --human-readable
 
         echo "du /opt"
-        du --human-readable --summarize --total /opt *
+        du --human-readable --summarize --total /opt/*
 
         echo "du /usr/lib"
-        du --human-readable --summarize --total /usr/lib *
+        du --human-readable --summarize --total /usr/lib/*
 
         echo "du /usr/local"
-        du --human-readable --summarize --total /usr/local *
+        du --human-readable --summarize --total /usr/local/*
 
         echo "du /usr/local/lib"
-        du --human-readable --summarize --total /usr/local/lib *
+        du --human-readable --summarize --total /usr/local/lib/*
 
         echo "du /usr/local/share"
-        du --human-readable --summarize --total /usr/local/share *
+        du --human-readable --summarize --total /usr/local/share/*
 
         echo "du /usr/share"
-        du --human-readable --summarize --total /usr/share *
+        du --human-readable --summarize --total /usr/share/*
         # END DEBUGGING
 
         usageBefore=$(df --human-readable /)
