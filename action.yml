@@ -121,28 +121,8 @@ runs:
           exit 1
         fi
 
-        # DEBUGGING
-        echo "df"
-        df --human-readable
-
-        echo "du /opt"
-        du --human-readable --summarize --total /opt
-
-        echo "du /usr/lib"
-        du --human-readable --summarize --total /usr/lib
-
-        echo "du /usr/local"
-        du --human-readable --summarize --total /usr/local
-
-        echo "du /usr/local/lib"
-        du --human-readable --summarize --total /usr/local/lib
-
-        echo "du /usr/local/share"
-        du --human-readable --summarize --total /usr/local/share
-
-        echo "du /usr/share"
-        du --human-readable --summarize --total /usr/share
-        # END DEBUGGING
+        usageBefore=$(df --human-readable /)
+        export usageBefore
 
         if [[ "${REMOVE_OPT_GOOGLE}" ]]; then
           echo "Removing /opt/google"
@@ -276,3 +256,12 @@ runs:
         else
           echo "Not removing /usr/share/swift, to remove set 'remove_usr_share_swift: true'"
         fi
+
+        usageAfter=$(df --human-readable /)
+        export usageAfter
+
+        usageBefore=$(echo "${usageBefore}" | awk '{print $4}' | tail --lines=+2 | sed 's/G//')
+        usageAfter=$(echo "${usageAfter}" | awk '{print $4}' | tail --lines=+2 | sed 's/G//')
+
+        totalFreed=$((usageBefore - usageAfter))
+        echo "Total freed space: ${totalFreed}"
