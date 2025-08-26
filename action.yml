@@ -31,24 +31,16 @@ inputs:
     description: Remove /usr/lib/google-cloud-sdk
     required: true
     default: true
-  remove_usr_lib_heroku:
-    description: Remove /usr/lib/heroku
+  remove_usr_lib_llvm_16:
+    description: Remove /usr/lib/llvm-16
     required: true
     default: true
-  remove_usr_lib_llvm_13:
-    description: Remove /usr/lib/llvm-13
+  remove_usr_lib_llvm_17:
+    description: Remove /usr/lib/llvm-17
     required: true
     default: true
-  remove_usr_lib_llvm_14:
-    description: Remove /usr/lib/llvm-14
-    required: true
-    default: true
-  remove_usr_lib_llvm_15:
-    description: Remove /usr/lib/llvm-15
-    required: true
-    default: true
-  remove_usr_lib_mono:
-    description: Remove /usr/lib/mono
+  remove_usr_lib_llvm_18:
+    description: Remove /usr/lib/llvm-18
     required: true
     default: true
   remove_usr_local_julia:
@@ -100,11 +92,9 @@ runs:
         REMOVE_OPT_PIPX: ${{ inputs.remove_opt_pipx }}
         REMOVE_USR_LIB_FIREFOX: ${{ inputs.remove_usr_lib_firefox }}
         REMOVE_USR_LIB_GOOGLE_CLOUD_SDK: ${{ inputs.remove_usr_lib_google_cloud_sdk }}
-        REMOVE_USR_LIB_HEROKU: ${{ inputs.remove_usr_lib_heroku }}
-        REMOVE_USR_LIB_LLVM_13: ${{ inputs.remove_usr_lib_llvm_13 }}
-        REMOVE_USR_LIB_LLVM_14: ${{ inputs.remove_usr_lib_llvm_14 }}
-        REMOVE_USR_LIB_LLVM_15: ${{ inputs.remove_usr_lib_llvm_15 }}
-        REMOVE_USR_LIB_MONO: ${{ inputs.remove_usr_lib_mono }}
+        REMOVE_USR_LIB_LLVM_16: ${{ inputs.remove_usr_lib_llvm_16 }}
+        REMOVE_USR_LIB_LLVM_17: ${{ inputs.remove_usr_lib_llvm_17 }}
+        REMOVE_USR_LIB_LLVM_18: ${{ inputs.remove_usr_lib_llvm_18 }}
         REMOVE_USR_LOCAL_JULIA: ${{ inputs.remove_usr_local_julia }}
         REMOVE_USR_LOCAL_LIB_ANDROID: ${{ inputs.remove_usr_local_lib_android }}
         REMOVE_USR_LOCAL_LIB_NODE_MODULES: ${{ inputs.remove_usr_local_lib_node_modules }}
@@ -120,6 +110,9 @@ runs:
           echo "Not confirmed, to confirm set 'confirm: true'"
           exit 1
         fi
+
+        usageBefore=$(df --human-readable /)
+        export usageBefore
 
         if [[ "${REMOVE_OPT_GOOGLE}" ]]; then
           echo "Removing /opt/google"
@@ -163,39 +156,25 @@ runs:
           echo "Not removing /usr/lib/google-cloud-sdk, to remove set 'remove_usr_lib_google_cloud_sdk: true'"
         fi
 
-        if [[ "${REMOVE_USR_LIB_HEROKU}" ]]; then
-          echo "Removing /usr/lib/heroku"
-          sudo rm --force --recursive /usr/lib/heroku
+        if [[ "${REMOVE_USR_LIB_LLVM_16}" ]]; then
+          echo "Removing /usr/lib/llvm-16"
+          sudo rm --force --recursive /usr/lib/llvm-16
         else
-          echo "Not removing /usr/lib/heroku, to remove set 'remove_usr_lib_heroku: true'"
+          echo "Not removing /usr/lib/llvm-16, to remove set 'remove_usr_lib_llvm_16: true'"
         fi
 
-        if [[ "${REMOVE_USR_LIB_LLVM_13}" ]]; then
-          echo "Removing /usr/lib/llvm-13"
-          sudo rm --force --recursive /usr/lib/llvm-13
+        if [[ "${REMOVE_USR_LIB_LLVM_17}" ]]; then
+          echo "Removing /usr/lib/llvm-17"
+          sudo rm --force --recursive /usr/lib/llvm-17
         else
-          echo "Not removing /usr/lib/llvm-13, to remove set 'remove_usr_lib_llvm_13: true'"
+          echo "Not removing /usr/lib/llvm-17, to remove set 'remove_usr_lib_llvm_17: true'"
         fi
 
-        if [[ "${REMOVE_USR_LIB_LLVM_14}" ]]; then
-          echo "Removing /usr/lib/llvm-14"
-          sudo rm --force --recursive /usr/lib/llvm-14
+        if [[ "${REMOVE_USR_LIB_LLVM_18}" ]]; then
+          echo "Removing /usr/lib/llvm-18"
+          sudo rm --force --recursive /usr/lib/llvm-18
         else
-          echo "Not removing /usr/lib/llvm-14, to remove set 'remove_usr_lib_llvm_14: true'"
-        fi
-
-        if [[ "${REMOVE_USR_LIB_LLVM_15}" ]]; then
-          echo "Removing /usr/lib/llvm-15"
-          sudo rm --force --recursive /usr/lib/llvm-15
-        else
-          echo "Not removing /usr/lib/llvm-15, to remove set 'remove_usr_lib_llvm_15: true'"
-        fi
-
-        if [[ "${REMOVE_USR_LIB_MONO}" ]]; then
-          echo "Removing /usr/lib/mono"
-          sudo rm --force --recursive /usr/lib/mono
-        else
-          echo "Not removing /usr/lib/mono, to remove set 'remove_usr_lib_mono: true'"
+          echo "Not removing /usr/lib/llvm-18, to remove set 'remove_usr_lib_llvm_18: true'"
         fi
 
         if [[ "${REMOVE_USR_LOCAL_JULIA}" ]]; then
@@ -253,3 +232,17 @@ runs:
         else
           echo "Not removing /usr/share/swift, to remove set 'remove_usr_share_swift: true'"
         fi
+
+        usageAfter=$(df --human-readable /)
+        export usageAfter
+
+        availableBefore=$(echo "${usageBefore}" | awk '{print $4}' | tail --lines=+2 | sed 's/G//')
+        availableAfter=$(echo "${usageAfter}" | awk '{print $4}' | tail --lines=+2 | sed 's/G//')
+
+        totalFreed=$((availableAfter - availableBefore))
+        echo "Total freed space: ${totalFreed}GiB"
+
+        echo "### 🧼 Clean Runner Summary" >>"${GITHUB_STEP_SUMMARY}"
+        echo "Before cleanup: ${availableBefore}GiB" >>"${GITHUB_STEP_SUMMARY}"
+        echo "After cleanup: ${availableAfter}GiB" >>"${GITHUB_STEP_SUMMARY}"
+        echo "Total freed: ${totalFreed}GiB" >>"${GITHUB_STEP_SUMMARY}"
