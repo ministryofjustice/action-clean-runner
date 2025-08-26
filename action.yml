@@ -31,10 +31,6 @@ inputs:
     description: Remove /usr/lib/google-cloud-sdk
     required: true
     default: true
-  remove_usr_lib_heroku:
-    description: Remove /usr/lib/heroku
-    required: true
-    default: true
   remove_usr_lib_llvm_16:
     description: Remove /usr/lib/llvm-16
     required: true
@@ -96,7 +92,6 @@ runs:
         REMOVE_OPT_PIPX: ${{ inputs.remove_opt_pipx }}
         REMOVE_USR_LIB_FIREFOX: ${{ inputs.remove_usr_lib_firefox }}
         REMOVE_USR_LIB_GOOGLE_CLOUD_SDK: ${{ inputs.remove_usr_lib_google_cloud_sdk }}
-        REMOVE_USR_LIB_HEROKU: ${{ inputs.remove_usr_lib_heroku }}
         REMOVE_USR_LIB_LLVM_16: ${{ inputs.remove_usr_lib_llvm_16 }}
         REMOVE_USR_LIB_LLVM_17: ${{ inputs.remove_usr_lib_llvm_17 }}
         REMOVE_USR_LIB_LLVM_18: ${{ inputs.remove_usr_lib_llvm_18 }}
@@ -159,13 +154,6 @@ runs:
           sudo rm --force --recursive /usr/lib/google-cloud-sdk
         else
           echo "Not removing /usr/lib/google-cloud-sdk, to remove set 'remove_usr_lib_google_cloud_sdk: true'"
-        fi
-
-        if [[ "${REMOVE_USR_LIB_HEROKU}" ]]; then
-          echo "Removing /usr/lib/heroku"
-          sudo rm --force --recursive /usr/lib/heroku
-        else
-          echo "Not removing /usr/lib/heroku, to remove set 'remove_usr_lib_heroku: true'"
         fi
 
         if [[ "${REMOVE_USR_LIB_LLVM_16}" ]]; then
