@@ -129,7 +129,7 @@ runs:
         du --human-readable --summarize --total /opt
 
         echo "du /usr/lib"
-        du --human-readable --summarize --total /opt/lib
+        du --human-readable --summarize --total /usr/lib
 
         echo "du /usr/local"
         du --human-readable --summarize --total /usr/local
