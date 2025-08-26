@@ -254,7 +254,7 @@ runs:
         totalFreed=$((availableAfter - availableBefore))
         echo "Total freed space: ${totalFreed}GiB"
 
-        echo "### 🧼 Clean Runner Summary"
-        echo "Before cleanup: ${availableBefore}GiB"
-        echo "After cleanup: ${availableAfter}GiB"
-        echo "Total freed: ${totalFreed}GiB"
+        echo "### 🧼 Clean Runner Summary" >>"${GITHUB_STEP_SUMMARY}"
+        echo "Before cleanup: ${availableBefore}GiB" >>"${GITHUB_STEP_SUMMARY}"
+        echo "After cleanup: ${availableAfter}GiB" >>"${GITHUB_STEP_SUMMARY}"
+        echo "Total freed: ${totalFreed}GiB" >>"${GITHUB_STEP_SUMMARY}"
